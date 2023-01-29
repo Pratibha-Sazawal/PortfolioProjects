@@ -3,9 +3,9 @@ FROM PortfolioProject.dbo.CovidDeaths
 Where continent Is Not Null  -- Where it is null, the location is the continent, not country
 ORDER BY 3, 4
 
---SELECT *
---FROM PortfolioProject.dbo.CovidVaccinations
---ORDER BY 3, 4
+SELECT *
+FROM PortfolioProject.dbo.CovidVaccinations
+ORDER BY 3, 4
 
 -- Select data that we are going to be using
 
