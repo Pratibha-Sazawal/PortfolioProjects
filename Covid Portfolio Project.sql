@@ -27,7 +27,7 @@ Order By 1,2
 
 Select location, date, population, total_cases, (total_cases/population)*100 As PercentPopulationInfected
 From PortfolioProject..CovidDeaths
-Where continent Is Not Null
+Where location = 'India' And continent Is Not Null
 Order By 1,2
 
 -- Looking at Countries with highest infection rate compared to population
