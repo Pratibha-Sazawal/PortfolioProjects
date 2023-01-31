@@ -46,7 +46,7 @@ Where continent Is Not Null
 Group By location
 Order By TotalDeathCount Desc
 
--- Showimg continents with the highest death count per population
+-- Showing continents with the highest death count per population
 
 Select continent, Max(Cast(total_deaths As Int)) As TotalDeathCount
 From PortfolioProject..CovidDeaths
