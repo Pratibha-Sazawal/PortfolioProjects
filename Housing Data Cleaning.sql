@@ -12,9 +12,6 @@ From PortfolioProject.dbo.NashvilleHousing
 Select SaleDate, Convert(Date, SaleDate)
 From PortfolioProject.dbo.NashvilleHousing
 
-Update PortfolioProject.dbo.NashvilleHousing    -- Doesn't update
-Set SaleDate = Convert(Date, SaleDate)
-
 Alter Table PortfolioProject.dbo.NashvilleHousing
 Add SaleDateConverted Date;
 
@@ -34,20 +31,10 @@ Where PropertyAddress Is Null
 
 Select *
 From PortfolioProject.dbo.NashvilleHousing
-Order By ParcelID         -- When Parcel ID is same for two entries, then Property Address is also same, but Unique ID is different
--- Can populate the null property addresses using this
-
--- Need to join the table with itself to match the column entries
-
-Select a.ParcelID, a.PropertyAddress, b.ParcelID, B.PropertyAddress
-From PortfolioProject.dbo.NashvilleHousing a
-Join PortfolioProject.dbo.NashvilleHousing b
-On a.ParcelID = b.ParcelID
-And a.[UniqueID ] <> b.[UniqueID ]
-Where a.PropertyAddress Is Null
+Order By ParcelID         
 
 Select a.ParcelID, a.PropertyAddress, b.ParcelID, B.PropertyAddress, ISNULL(a.PropertyAddress, b.PropertyAddress)
-From PortfolioProject.dbo.NashvilleHousing a   -- Populating a.PropertyAddress where ever it's null by b.PropertyAddress
+From PortfolioProject.dbo.NashvilleHousing a   
 Join PortfolioProject.dbo.NashvilleHousing b
 On a.ParcelID = b.ParcelID
 And a.[UniqueID ] <> b.[UniqueID ]
@@ -65,18 +52,13 @@ Where a.PropertyAddress Is Null
 
 -- Breaking out Address into Individual Columns (Address, City, State)
 
-Select PropertyAddress                    -- Address and City are separated by a comma everywhere
+Select PropertyAddress                    
 From PortfolioProject.dbo.NashvilleHousing
 
 Select
 SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress)-1) As Address 
-, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1, LEN(PropertyAddress)) As Address
+, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1, LEN(PropertyAddress)) As City
 From PortfolioProject.dbo.NashvilleHousing
--- Substring(Where to take string from, starting point index, till where to look)
---charindex gives position of the character
--- -1 because we don't want the comma
-
--- To separate two values from a column, we need to create two new columns
 
 Alter Table PortfolioProject.dbo.NashvilleHousing
 Add PropertySplitAddress Nvarchar(255);
@@ -93,10 +75,9 @@ Set PropertySplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddres
 Select *
 From PortfolioProject.dbo.NashvilleHousing
 
--- Easier way than Substring
 
 Select OwnerAddress
-From PortfolioProject.dbo.NashvilleHousing  -- Address, City and State are separated by commas everywhere
+From PortfolioProject.dbo.NashvilleHousing  
 
 -- Using Parsename - It is only useful with periods (.)
 -- Replace (,) with (.)
@@ -157,22 +138,6 @@ Set SoldAsVacant = Case When SoldAsVacant = 'Y' Then 'Yes'
 Select *
 From PortfolioProject.dbo.NashvilleHousing
 
---Removing duplicate rows
-
-Select *,                      -- Partitioning data on things that are unique to each row
-	ROW_NUMBER() Over (
-	Partition By ParcelID,
-				 PropertyAddress,
-				 SaleDate,
-				 SalePrice,
-				 LegalReference
-				 Order By UniqueID
-				 ) row_num     -- row_num = 1 is a particular row and row_num = 2 is its duplicate
-From PortfolioProject.dbo.NashvilleHousing
-Order By ParcelID
---Where row_num > 1    --Where won't work here, need to create a CTE
-
-  --Creating a CTE - common table expression - Temp table
 With RowNumCTE As(
 Select *,                      
 	ROW_NUMBER() Over (
